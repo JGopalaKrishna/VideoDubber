@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JGK | Video/Photo Edit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            width: 100%;
+        }
+
+        .left-menu {
+            width: 250px; /* Increased width */
+            background-color: #ffffff; /* bg-white */
+            padding: 24px; /* p-6 */
+            border-right: 1px solid #e5e7eb; /* border-r border-gray-200 */
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* gap-4 */
+            /* overflow: scroll; */
+        }
+        .left-menu-section {
+            margin-bottom: 16px; /* mb-4 */
+        }
+        .left-menu-section label {
+            display: block;
+            margin-bottom: 8px; /* mb-2 */
+            font-weight: 500; /* font-medium */
+            color: #6b7280; /* text-gray-500 */
+            font-size: 0.875rem; /* text-sm */
+        }
+        .left-menu-section input {
+            width: 90%;
+            padding: 10px; /* p-2.5 */
+            border: 1.5px solid #5d3ff4; /* border border-gray-300 */
+            border-radius: 6px; /* rounded-md */
+            font-size: 1rem; /* text-base */
+            margin-bottom: 16px;
+        }
+        .left-menu-section button {
+            background-color: #4CAF50; /* bg-green-500 */
+            color: white; /* text-white */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px; /* rounded-md */
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin-top: 8px;
+        }
+        .left-menu-section button:hover {
+            background-color: #45a049; /* bg-green-700 */
+        }
+
+        .LastDiv{
+            flex: 1;
+            width: 600px;
+            display: flex;flex-direction: column;
+            /* background-color: #e07307; */
+        }
+        .TopMenu{
+            height: 10%;
+            background-color: #fff;
+            display: flex;justify-content: end;align-items: center;
+            gap: 10px;
+        }
+        .Upgrade_button{
+            height: fit-content;width: fit-content;
+            padding: 10px 20px;
+            background-color: orange;color: white;
+            border: 2px solid rgb(235, 153, 0);border-radius: 10px;
+            font-size: 18px;font-weight: 700;
+            cursor: pointer;
+        }
+        .Done_button{
+            height: fit-content;width: fit-content;
+            padding: 10px 20px;
+            background-color: rgb(0, 255, 55);color: white;
+            border: 2px solid rgb(0, 235, 12);border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;font-weight: 700;
+        }
+        .main-content {
+            height: 90%;
+            /* background-color: #912f2f; */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align items to the start (top) */
+            padding: 24px; /* p-6 */
+            overflow: auto;
+            position: relative; /* Make sure main content is a positioning context */
+        }
+
+        #media-canvas {
+          background-color: #f9fafb;
+          border: 2px dashed #d1d5db;
+          border-radius: 8px;
+          touch-action: none; /* Important for preventing default touch behavior */
+          cursor: crosshair;
+          margin-bottom: 40px; /* Add margin to the bottom of the canvas */
+        }
+
+        .video-container {
+            position: absolute; /* Allows for absolute positioning within main-content */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none; /* Initially hidden */
+            z-index: 10; /* Ensure video is above canvas */
+            /* Add styling for the video container */
+            border: 2px solid #6b7280;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-element {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #timer-display {
+            position: relative; /* Position relative, so it's relative to main-content */
+            bottom: 0; /* Position at the bottom */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 1rem;
+            z-index: 20; /* Ensure timer is above everything */
+            margin-top: 10px;
+        }
+        #stop-button{
+            background-color: red;
+        }
+        .mainMenu{
+            padding: 10px;
+            background-color: #fff;
+            overflow: scroll;
+        }
+        .icons{
+            width: 80px;height: 60px;
+            background-color: #f0f0f0;
+            display: flex;justify-content: center;align-items: center;flex-direction: column;
+            border-radius: 10px;
+            box-shadow: 1px 1px 1px #5d3ff4;
+            border: .5px solid #5d3ff4;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .icons:hover{
+            /* background-color: #5d3ff4; */
+            border: 2px solid #5d3ff4;
+            color: #5d3ff4;
+            font-weight: bolder;
+            box-shadow: 2px 2px 2px #5d3ff4;
+        }
+        .icons p{
+            margin: 0;
+        } 
+        .selected_Iocn{
+            border: 2px solid #5d3ff4;
+            color: #5d3ff4;
+            font-weight: bolder;
+        }
+        .fullScreen{
+            display: flex;
+            width: 100%;height: 100svh;
+        }
+
+    </style>
+</head> 
+<body class="bg-gray-100">
+    <div class=" fullScreen">
+        <div class="mainMenu">
+            <i class="fa-solid fa-bars" style="padding-left: 30px; font-size: 25px;margin-bottom: 20px;"></i>
+            <div class="icons" onclick="alert('Comming Soon...')" onclick="alert('Comming Soon...')">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <p>Search</p>
+            </div>
+            <div class="icons" onclick="alert('Comming Soon...')">
+                <i class="fa-solid fa-gear"></i>
+                <p>Setting</p>
+            </div>
+            <div class="icons" onclick="alert('Comming Soon...')">
+                <i class="fa-solid fa-bars-progress"></i>
+                <p>Brand Kit</p>
+            </div>
+            <div class="icons selected_Iocn">
+                <i class="fa-solid fa-plus"></i>
+                <p>Media</p>
+            </div>
+            <div class="icons" onclick="alert('Comming Soon...')">
+                <i class="fa-solid fa-music"></i>
+                <p>Audio</p>
+            </div>
+            <div class="icons" onclick="alert('Comming Soon...')">
+                <i class="fa-solid fa-closed-captioning"></i>
+                <p>Subtitle</p>
+            </div>
+            <div class="icons" onclick="alert('Comming Soon...')">
+                <i class="fa-regular fa-pen-to-square"></i>
+                <p>Text</p>
+            </div>
+            <div class="icons" onclick="alert('Comming Soon...')">
+                <i class="fa-regular fa-file"></i>
+                <p>Elemnts</p>
+            </div>
+            <div class="icons" onclick="alert('Comming Soon...')">
+                <i class="fa-solid fa-video"></i>
+                <p>Record</p>
+            </div>            
+        </div>
+        <div class="left-menu">
+            <div class="left-menu-section">
+                <label for="media-input">Media | Add Video/Photo:</label>
+                <input type="file" id="media-input" accept="video/*, image/*">
+            </div>
+            <div class="left-menu-section">
+                <label for="width-input">Width:</label>
+                <input type="number" id="width-input" value="320">
+            </div>
+            <div class="left-menu-section">
+                <label for="height-input">Height:</label>
+                <input type="number" id="height-input" value="240">
+            </div>
+            <div class="left-menu-section">
+                <label for="start-time">Start Time (s):</label>
+                <input type="number" id="start-time" value="0">
+            </div>
+            <div class="left-menu-section">
+                <label for="end-time">End Time (s):</label>
+                <input type="number" id="end-time" value="5">
+            </div>
+        </div>
+        <div class="LastDiv">
+            <div class="TopMenu">
+                <i class="fa-solid fa-rotate-left"></i>
+                <i class="fa-solid fa-rotate-right"></i>
+                <a href="#">Signup</a>
+                <a href="#">Login</a>
+                <button class="Upgrade_button" onclick="alert('Update Later...')">Upgrade <i class="fa-solid fa-cloud-bolt"></i></button>
+                <button class="Done_button" onclick="alert('After Some Time...')">Done <i class="fa-solid fa-check"></i></button>
+            </div>
+            <div class="main-content">
+                <canvas id="media-canvas" width="500" height="300"></canvas>
+                <div id="video-container" class="video-container">
+                    <video id="video-element" class="video-element" controls></video>
+                </div>
+                <div class="left-menu-section">
+                    <button id="play-button">Play <i class="fa-solid fa-play"></i></button>
+                    <button id="stop-button">Stop <i class="fa-solid fa-pause"></i></button> 
+                    <div id="timer-display">Time: 0s</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById('media-canvas');
+        const ctx = canvas.getContext('2d');
+        const mediaInput = document.getElementById('media-input');
+        const widthInput = document.getElementById('width-input');
+        const heightInput = document.getElementById('height-input');
+        const startTimeInput = document.getElementById('start-time');
+        const endTimeInput = document.getElementById('end-time');
+        const playButton = document.getElementById('play-button');
+        const stopButton = document.getElementById('stop-button'); // Get the stop button
+        const videoContainer = document.getElementById('video-container');
+        const videoElement = document.getElementById('video-element');
+        const timerDisplay = document.getElementById('timer-display');
+
+        let mediaElement = null; // Will store either video or image
+        let mediaType = null; // 'video' or 'image'
+        let isDragging = false;
+        let startX, startY;
+        let elementX = 160; // Initial position
+        let elementY = 120;
+        let elementWidth = 320;  // Initial size
+        let elementHeight = 240;
+        let animationFrameId;
+        let timerIntervalId;
+        let currentTime = 0;
+        let isPlaying = false;
+
+        widthInput.value = elementWidth;
+        heightInput.value = elementHeight;
+
+        function drawMedia() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (mediaElement) {
+                ctx.drawImage(mediaElement, elementX, elementY, elementWidth, elementHeight);
+            }
+        }
+
+        function handleMediaLoad() {
+            if (mediaType === 'video') {
+                videoElement.srcObject = new MediaSource(); // Clear previous source
+                videoElement.srcObject = URL.createObjectURL(this.files[0]);
+                videoElement.onloadedmetadata = () => {
+                    elementWidth = videoElement.videoWidth;
+                    elementHeight = videoElement.videoHeight;
+                    widthInput.value = elementWidth;
+                    heightInput.value = elementHeight;
+                    videoElement.style.width = `${elementWidth}px`;
+                    videoElement.style.height = `${elementHeight}px`;
+                    drawMedia();
+                };
+            } else { // image
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        elementWidth = img.width;
+                        elementHeight = img.height;
+                        widthInput.value = elementWidth;
+                        heightInput.value = elementHeight;
+                        drawMedia();
+                    };
+                    img.src = e.target.result;
+                    mediaElement = img;
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+            videoContainer.style.display = mediaType === 'video' ? 'block' : 'none';
+        }
+
+        function handleDragStart(e) {
+            e.preventDefault();
+            isDragging = true;
+            startX = e.clientX - elementX;
+            startY = e.clientY - elementY;
+            canvas.style.cursor = 'grabbing';
+        }
+
+        function handleDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            elementX = e.clientX - startX;
+            elementY = e.clientY - startY;
+            drawMedia();
+        }
+
+        function handleDragEnd(e) {
+            e.preventDefault();
+            isDragging = false;
+            canvas.style.cursor = 'crosshair';
+        }
+
+        function handleResize(e) {
+            elementWidth = parseInt(widthInput.value);
+            elementHeight = parseInt(heightInput.value);
+            if (mediaElement) {
+              if(mediaType === 'video'){
+                videoElement.style.width = `${elementWidth}px`;
+                videoElement.style.height = `${elementHeight}px`;
+              }
+              drawMedia();
+            }
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = `Time: ${currentTime.toFixed(1)}s`;
+        }
+
+        function playMedia() {
+            if (!mediaElement) return;
+
+            const startTime = parseFloat(startTimeInput.value);
+            const endTime = parseFloat(endTimeInput.value);
+
+            if (endTime <= startTime) {
+                alert("End time must be greater than start time.");
+                return;
+            }
+
+            isPlaying = true;
+            currentTime = 0;
+            updateTimerDisplay();
+            mediaElement.currentTime = startTime; // Start video at start time
+
+            if (mediaType === 'video') {
+                videoContainer.style.display = 'block'; //show video
+                videoElement.play();
+            } else {
+              drawMedia(); //show image
+            }
+
+
+            timerIntervalId = setInterval(() => {
+                currentTime += 0.1; // Update every 100ms for better granularity
+                updateTimerDisplay();
+
+                if (currentTime >= endTime || currentTime < startTime) {
+                    clearInterval(timerIntervalId);
+                    isPlaying = false;
+                    timerIntervalId = null;
+                    currentTime = 0;
+                    updateTimerDisplay();
+                    if (mediaType === 'video') {
+                        videoElement.pause();
+                        videoContainer.style.display = 'none'; // Hide video after end time
+                    } else {
+                       ctx.clearRect(0, 0, canvas.width, canvas.height); //hide image
+                    }
+                }
+            }, 100);
+        }
+
+        function stopMedia() {
+            if (timerIntervalId) {
+                clearInterval(timerIntervalId);
+                timerIntervalId = null;
+            }
+            isPlaying = false;
+            currentTime = 0;
+            updateTimerDisplay();
+            if (mediaType === 'video') {
+                videoElement.pause();
+                videoContainer.style.display = 'none';
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+
+        mediaInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            if (file.type.startsWith('video/')) {
+                mediaType = 'video';
+                mediaElement = videoElement;
+                videoElement.src = URL.createObjectURL(file); // Set source
+            } else if (file.type.startsWith('image/')) {
+                mediaType = 'image';
+                mediaElement = new Image();
+                mediaElement.src = URL.createObjectURL(file);
+            }
+            handleMediaLoad.call(this); // Use call to set the correct 'this'
+        });
+
+
+        canvas.addEventListener('mousedown', handleDragStart);
+        canvas.addEventListener('mousemove', handleDrag);
+        canvas.addEventListener('mouseup', handleDragEnd);
+        canvas.addEventListener('mouseleave', handleDragEnd); // Stop dragging if mouse leaves canvas
+
+        widthInput.addEventListener('change', handleResize);
+        heightInput.addEventListener('change', handleResize);
+        playButton.addEventListener('click', playMedia);
+        stopButton.addEventListener('click', stopMedia); // Add event listener for stop button
+
+        // Optional:  Cleanup function to clear interval and animation frame
+        window.addEventListener('beforeunload', () => {
+            if (timerIntervalId) {
+                clearInterval(timerIntervalId);
+            }
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        });
+    </script>
+</body>
+</html>
